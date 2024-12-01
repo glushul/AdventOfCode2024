@@ -1,31 +1,33 @@
-import scala.+:
 import scala.io.Source
 
 object Main {
   def main(args: Array[String]): Unit = {
-    println(day1("inputs/day1.txt"))
-
+    println(day1_1("inputs/day1.txt"))
+    println(day1_2("inputs/day1.txt"))
   }
 
-  def day1(file_name: String): Int = {
-    val bufferedSource = Source.fromFile(file_name)
+  def day1_1(fileName: String): Int = {
+    val (list1, list2) = parseAndUnzip(fileName)
 
-    val numbers = bufferedSource.getLines()
+    (list1.sorted zip list2.sorted).map{ case (a, b) =>
+      Math.abs(a - b)
+    }.sum
+  }
+
+  def day1_2(fileName: String): Int = {
+    val (list1, list2) = parseAndUnzip(fileName)
+
+    list1.map(a => a * list2.count(_ == a)).sum
+  }
+
+  def parseAndUnzip(fileName: String): (List[Int], List[Int]) = {
+    val bufferedSource = Source.fromFile(fileName)
+
+    bufferedSource.getLines()
       .map { line =>
         val parts = line.split("\\s+").map(_.toInt)
         (parts(0), parts(1))
-      }.toList
-
-    bufferedSource.close()
-
-    val list1 = numbers.map { case (first, _) => first }.sorted
-    val list2 = numbers.map { case (_, second) => second }.sorted
-
-    val result = (list1 zip list2).map{a =>
-      if (a._1 < a._2) (a._2 - a._1) else if (a._2 < a._1) (a._1 - a._2) else 0
-    }.sum
-
-    result
+      }.toList.unzip
   }
 
 }
